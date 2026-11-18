@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.modular.playground</groupId>
     <artifactId>common-utils</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
     <name>MyReadings :: Common Utils</name>
     <properties>
@@ -26,6 +26,10 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5</artifactId>
@@ -96,7 +100,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/too-common-name/myreadings_utils</url>
+            <url>https://maven.pkg.github.com/myreadings/myreadings_utils</url>
         </repository>
     </distributionManagement>
 </project>

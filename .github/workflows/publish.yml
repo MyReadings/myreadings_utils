@@ -3,7 +3,9 @@ name: Publish to GitHub Packages
 on:
   push:
     branches:
-      - main 
+      - main
+    tags:
+      - 'v*'
 
 jobs:
   publish:
@@ -20,9 +22,22 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Create settings.xml for GitHub Packages
+          server-id: github
+      - name: Build and test
+        run: mvn -B verify
+      - name: Check release tag matches library version
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
         run: |
-          mkdir -p ~/.m2
-          echo "<settings><servers><server><id>github</id><username>GITHUB_ACTOR</username><password>${{ secrets.GITHUB_TOKEN }}</password></server></servers></settings>" > ~/.m2/settings.xml
-      - name: Build and Deploy with Maven
-        run: mvn -B deploy
+          python3 - <<'PY'
+          import os
+          import xml.etree.ElementTree as ET
+          version = ET.parse('pom.xml').findtext('{http://maven.apache.org/POM/4.0.0}version')
+          assert os.environ['RELEASE_TAG'] == f'v{version}', 'Release tag must match pom.xml version'
+          PY
+      - name: Publish release to GitHub Packages
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: mvn -B deploy -DskipTests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
